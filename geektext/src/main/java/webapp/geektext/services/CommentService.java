@@ -1,8 +1,11 @@
 package webapp.geektext.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import webapp.geektext.entities.Comment;
@@ -19,6 +22,23 @@ public class CommentService {
 	
 	public List<Comment> getComments(){
 		return commentRepo.findAll();
+	}
+	
+	public ResponseEntity<List<Comment>> getCommentsByUserID(String userID) {
+		List<Comment> commentListToReturn = new ArrayList<Comment>(); // comment List to Return
+		List<Comment> commentsToSearch = commentRepo.findAll();
+		
+		for (Comment comment : commentsToSearch) {
+			if(comment.getCommentUserID().equals(userID)) {
+				commentListToReturn.add(comment);
+			}
+		}
+		if(commentListToReturn.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		else {
+			return new ResponseEntity<List<Comment>>(commentListToReturn, HttpStatus.OK);
+		}
 	}
 	
 	public Comment addComment(Comment comment) {
